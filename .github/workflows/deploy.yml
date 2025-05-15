@@ -29,9 +29,9 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EAS_ACCESS_TOKEN }}
 
-      #- name: 🏗 Build AAB using EAS (local)
-       # run: |
-       #   eas build --platform android --profile production --local --output builds/release.aab
+      - name: 🏗 Build AAB using EAS (local)
+        run: |
+          eas build --platform android --profile production --local --output builds/release.aab
 
       - name: 💎 Set up Ruby
         uses: ruby/setup-ruby@v1
