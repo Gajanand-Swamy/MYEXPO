@@ -44,7 +44,7 @@ jobs:
       - name: 🔐 Decode Google Play credentials
         run: |
           mkdir -p fastlane
-          echo "${GOOGLE_PLAY_JSON}" > fastlane/gcicd.json
+          printf '%s' "${GOOGLE_PLAY_JSON}" > fastlane/gcicd.json
 
       - name: 📤 Upload AAB to Play Store
         run: fastlane internal
