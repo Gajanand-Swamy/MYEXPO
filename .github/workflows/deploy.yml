@@ -9,42 +9,44 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_PLAY_JSON: ${{ secrets.GOOGLE_PLAY_JSON }}
-      EAS_ACCESS_TOKEN: ${{ secrets.EAS_ACCESS_TOKEN }}  # <- EAS CLI uses this automatically
+      EAS_ACCESS_TOKEN: ${{ secrets.EAS_ACCESS_TOKEN }}
 
     steps:
-      - name: Checkout repository
+      - name: 📥 Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: 🧰 Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
-      - name:  Setup EAS
+      - name: 🛠 Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EAS_ACCESS_TOKEN }}
 
-      - name: Build AAB using EAS
+      - name: 🏗 Build AAB using EAS
         run: |
-          eas build --platform android --profile production --local --output builds/app.aab
+          eas build --platform android --profile production --local --output builds/release.aab
 
-      - name: Set up Ruby
+      - name: 💎 Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Decode Google Play credentials
+      - name: 🚀 Install Fastlane dependencies
         run: |
-          mkdir -p fastlane
+          cd fastlane
+          bundle install
+
+      - name: 🔐 Decode Google Play credentials
+        run: |
           echo "${GOOGLE_PLAY_JSON}" > fastlane/gcicd.json
 
-      - name: Upload AAB to Play Store
-        run: fastlane android internal
+      - name: 📤 Upload AAB to Play Store
+        run: |
+          bundle exec fastlane internal
