@@ -1,0 +1,46 @@
+name: Upload AAB to Play Store
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_PLAY_JSON: ${{ secrets.GOOGLE_PLAY_JSON }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build AAB using EAS
+        run: |
+          eas build --platform android --profile production --local --output builds/app.aab
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Decode Google Play credentials
+        run: |
+          mkdir -p fastlane
+          echo "${GOOGLE_PLAY_JSON}" > fastlane/gcicd.json
+
+      - name: Upload AAB to Play Store
+        run: fastlane android upload_play_store
