@@ -29,24 +29,22 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EAS_ACCESS_TOKEN }}
 
-      - name: 🏗 Build AAB using EAS
-        run: |
-          eas build --platform android --profile production --local --output builds/release.aab
+      #- name: 🏗 Build AAB using EAS (local)
+       # run: |
+       #   eas build --platform android --profile production --local --output builds/release.aab
 
       - name: 💎 Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
 
-      - name: 🚀 Install Fastlane dependencies
-        run: |
-          cd fastlane
-          bundle install
+      - name: 🚀 Install Fastlane
+        run: gem install fastlane
 
       - name: 🔐 Decode Google Play credentials
         run: |
+          mkdir -p fastlane
           echo "${GOOGLE_PLAY_JSON}" > fastlane/gcicd.json
 
       - name: 📤 Upload AAB to Play Store
-        run: |
-          bundle exec fastlane internal
+        run: fastlane internal
